@@ -503,7 +503,7 @@ func (p *Parser) ParseDocxTextElement(e *lark.DocxTextElement, inline bool) stri
 
 			}
 			if isImage {
-				buf.WriteString("![](" + e.TextRun.Content + "]")
+				buf.WriteString("![](" + e.TextRun.Content + ")")
 				return buf.String()
 			}
 		}
