@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -13,6 +14,15 @@ import (
 	"github.com/elliotchance/orderedmap"
 	strip "github.com/grokify/html-strip-tags-go"
 	"github.com/olekukonko/tablewriter"
+)
+
+var (
+	picExt = map[string]bool{
+		".png":  true,
+		".jpeg": true,
+		".gif":  true,
+		".webp": true,
+	}
 )
 
 type Parser struct {
@@ -485,6 +495,19 @@ func (p *Parser) ParseDocxBlockText(b *lark.DocxBlockText) string {
 func (p *Parser) ParseDocxTextElement(e *lark.DocxTextElement, inline bool) string {
 	buf := new(strings.Builder)
 	if e.TextRun != nil {
+		if !inline {
+			isImage := false
+			if strings.HasPrefix(e.TextRun.Content, "http") {
+				ext := filepath.Ext(e.TextRun.Content)
+				_, isImage = picExt[strings.ToLower(ext)]
+
+			}
+			if isImage {
+				buf.WriteString("![](" + e.TextRun.Content + "]")
+				return buf.String()
+			}
+		}
+
 		buf.WriteString(p.ParseDocxTextElementTextRun(e.TextRun))
 	}
 	if e.MentionUser != nil {
