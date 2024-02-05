@@ -475,6 +475,8 @@ func (p *Parser) ParseDocxBlock(b *lark.DocxBlock, blockMap *orderedmap.OrderedM
 		buf.WriteString(p.ParseDocxBlockTable(b.ParentID, b.Table, blockMap))
 	case lark.DocxBlockTypeQuoteContainer:
 		buf.WriteString(p.ParseDocxBlockQuoteContainer(b.BlockID, b.QuoteContainer, blockMap))
+	case lark.DocxBlockTypeDivider:
+		buf.WriteString("\n---\n")
 	default:
 		return ""
 	}
