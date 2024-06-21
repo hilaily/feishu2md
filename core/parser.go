@@ -26,8 +26,11 @@ var (
 )
 
 type Parser struct {
-	ctx       context.Context
-	ImgTokens []string
+	ctx               context.Context
+	client            *Client
+	fixStaticDir      string
+	relativeStaticDir string
+	ImgTokens         []string
 }
 
 func NewParser(ctx context.Context) *Parser {
