@@ -9,12 +9,14 @@ import (
 	"github.com/Wsine/feishu2md/utils"
 	"github.com/chyroc/lark"
 	"github.com/olekukonko/tablewriter"
+	"github.com/sirupsen/logrus"
 )
 
 type Parser struct {
 	ctx       context.Context
 	ImgTokens []string
 	blockMap  map[string]*lark.DocxBlock
+	noTitle   bool
 }
 
 func NewParser(ctx context.Context) *Parser {
@@ -194,9 +196,12 @@ func (p *Parser) ParseDocxBlock(b *lark.DocxBlock, indentLevel int) string {
 func (p *Parser) ParseDocxBlockPage(b *lark.DocxBlock) string {
 	buf := new(strings.Builder)
 
-	buf.WriteString("# ")
-	buf.WriteString(p.ParseDocxBlockText(b.Page))
-	buf.WriteString("\n")
+	logrus.Debugf("no title, %v", p.noTitle)
+	if !p.noTitle {
+		buf.WriteString("# ")
+		buf.WriteString(p.ParseDocxBlockText(b.Page))
+		buf.WriteString("\n")
+	}
 
 	for _, childId := range b.Children {
 		childBlock := p.blockMap[childId]
@@ -420,4 +425,8 @@ func (p *Parser) ParseDocxBlockGrid(b *lark.DocxBlock, indentLevel int) string {
 	}
 
 	return buf.String()
+}
+
+func (p *Parser) SetNoTitle(noTitle bool) {
+	p.noTitle = noTitle
 }
